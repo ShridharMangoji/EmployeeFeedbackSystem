@@ -66,6 +66,7 @@ namespace EmpFeedbackSystem.Controllers
             }
             catch (Exception es)
             {
+                
                 resp = new BaseResponse()
                 {
                     status_code = 500,
@@ -90,11 +91,7 @@ namespace EmpFeedbackSystem.Controllers
                         if (DeviceCRUD.VerifyOTP(req.device_id, req.user_id, Convert.ToString(req.otp)))
                         {
                             DeviceCRUD.NulifyOTP(req.device_id, req.user_id, Convert.ToString(req.otp));
-                            RegisteredDevice device = new RegisteredDevice()
-                            {
-                                DeviceId = req.device_id,
-                                UserId = req.user_id
-                            };
+                            RegisteredDevice device = DeviceCRUD.GetDevice(req.device_id);
                             resp = new VerifyOTPResp()
                             {
                                 status_code = Ok().StatusCode,
@@ -115,8 +112,8 @@ namespace EmpFeedbackSystem.Controllers
                     {
                         resp = new VerifyOTPResp()
                         {
-                            status_code = Unauthorized().StatusCode,
-                            status_message = Unauthorized().ToString()
+                            status_code = BadRequest().StatusCode,
+                            status_message = BadRequest().ToString()
                         };
                     }
                 }
@@ -132,6 +129,7 @@ namespace EmpFeedbackSystem.Controllers
             }
             catch (Exception es)
             {
+                System.IO.File.AppendAllText(@"E:\IIS\EMP\WriteText.txt", es.Message);
                 resp = new VerifyOTPResp()
                 {
                     status_code = 500,

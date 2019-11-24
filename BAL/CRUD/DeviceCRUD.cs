@@ -52,5 +52,14 @@ namespace BAL.CRUD
                 }
             }
         }
+
+        public static RegisteredDevice GetDevice(string device_id)
+        {
+            using (var db = new Entities())
+            {
+                var result = db.RegisteredDevice.Where(x => x.DeviceId == device_id ).Include(x=>x.User).FirstOrDefault();
+                return result;
+            }
+        }
     }
 }
