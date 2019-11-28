@@ -31,5 +31,25 @@ namespace EmpFeedbackSystem.Models
     public class FeedbackHistoryReq : BaseRequest
     {
         public long feedback_id { get; set; }
+
+    }
+
+    public class FeedbackEscalationTeamReq : BaseRequest
+    {
+        public long feedback_id { get; set; }
+
+    }
+
+    public class FeedbackListReq : BaseRequest
+    {
+        public long escalated_user_id { get; set; }
+
+    }
+
+    public class UpdateFeedbackReq : BaseRequest
+    {
+        public long feedback_id { get; set; }
+
+        public Feedback feedback_info { get; set; }
     }
 }

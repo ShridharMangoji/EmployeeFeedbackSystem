@@ -30,7 +30,7 @@ namespace DAL.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Shridhar\\source\\repos\\EmpFeedbackSystem\\EmpFeedbackSystem\\Database\\DB.mdf;Integrated Security=True;");
+                optionsBuilder.UseSqlServer("Server=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Shridhar\\source\\repos\\EmpFeedbackSystem\\EmpFeedbackSystem\\Database\\DB.mdf;Trusted_Connection=True;Integrated Security=True;Connect Timeout=30;");
             }
         }
 
@@ -67,6 +67,8 @@ namespace DAL.Models
                     .HasColumnName("created_on")
                     .HasColumnType("datetime");
 
+                entity.Property(e => e.FeedbackCategoryId).HasColumnName("feedback_category_id");
+
                 entity.Property(e => e.LastUpdate)
                     .HasColumnName("last_update")
                     .HasColumnType("datetime");
@@ -92,6 +94,12 @@ namespace DAL.Models
                     .HasForeignKey(d => d.CreatedFor)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_feedback_To_users_for");
+
+                entity.HasOne(d => d.FeedbackCategory)
+                    .WithMany(p => p.Feedback)
+                    .HasForeignKey(d => d.FeedbackCategoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_feedback_To_category_id");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Feedback)
@@ -124,9 +132,7 @@ namespace DAL.Models
             {
                 entity.ToTable("feedback_escalation_mapping");
 
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.EscalatedUserId).HasColumnName("escalated_user_id");
 

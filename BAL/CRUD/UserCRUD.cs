@@ -27,11 +27,36 @@ namespace BAL.CRUD
             }
         }
 
+        public static UserRole GetUserRole(long userID)
+        {
+            using (var db = new Entities())
+            {
+                var result = db.UserRoleMapping.Where(x => x.UserId == userID).Select(x=>x.Role).FirstOrDefault();
+                return result;
+            }
+        }
+
         public static List<UserModel> GetEscalationUserList(long userID, long companyID, int scale)
         {
             using (var db = new Entities())
             {
                 var result = db.Users.Where(x => x.CompanyId == companyID && x.UserRoleMapping.Any(y => y.Role.Scale > scale))
+                   .Select(x => new
+                    UserModel()
+                   {
+                       ID = x.Id,
+                       Name = x.Name
+                   }).ToList();
+
+                return result;
+            }
+        }
+
+        public static List<UserModel> GetTeamList(long userID, long companyID, int scale)
+        {
+            using (var db = new Entities())
+            {
+                var result = db.Users.Where(x => x.CompanyId == companyID && x.Id!=userID)
                    .Select(x => new
                     UserModel()
                    {

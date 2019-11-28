@@ -31,10 +31,20 @@ namespace EmpFeedbackSystem.Models
         public List<UserModel> UserList { get; set; }
     }
 
+    public class EscalatedUserListResp : BaseResponse
+    {
+        public List<UserModel> UserList { get; set; }
+    }
+
     public class FeedbackHistoryResp : BaseResponse
     {
         public Feedback FeedbackDetails { get; set; }
 
         public List<FeedbackEscalationMapping> FeedbackEscalationHistory { get; set; }
+    }
+
+    public class FeedbackListResp : BaseResponse
+    {
+        public List<Feedback> FeedbackList { get; set; }
     }
 }

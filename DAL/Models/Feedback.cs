@@ -18,9 +18,11 @@ namespace DAL.Models
         public DateTime CreatedOn { get; set; }
         public DateTime LastUpdate { get; set; }
         public int StatusId { get; set; }
+        public int FeedbackCategoryId { get; set; }
 
         public virtual Users CreatedByNavigation { get; set; }
         public virtual Users CreatedForNavigation { get; set; }
+        public virtual FeedbackCategory FeedbackCategory { get; set; }
         public virtual FeedbackStatus Status { get; set; }
         public virtual ICollection<FeedbackEscalationMapping> FeedbackEscalationMapping { get; set; }
     }

@@ -45,5 +45,30 @@ namespace EmpFeedbackSystem.Models
         {
             return true;
         }
+
+        internal static bool UpdateFeedback(UpdateFeedbackReq req)
+        {
+            return true;
+        }
+
+        internal static bool TeamList(BaseRequest req)
+        {
+            return true;
+        }
+
+        internal static bool EscalatedUserList(BaseRequest req)
+        {
+            return true;
+        }
+
+        internal static bool FeedbackList(FeedbackListReq req)
+        {
+            return true;
+        }
+
+        internal static bool FeedbackEscalationTeam(FeedbackEscalationTeamReq req)
+        {
+            return true;
+        }
     }
 }
