@@ -59,7 +59,7 @@ namespace BAL.CRUD
                 if (feedbackid > 0)
                 {
                     var feedback = db.Feedback.Where(x => x.Id == feedbackid).FirstOrDefault();
-                    var result = db.Users.Where(x => x.CompanyId == companyID && Convert.ToInt64(x.Id) != userID) // && x.UserRoleMapping.Any(y => y.Role.Scale > scale)
+                    var result = db.Users.Where(x => x.CompanyId == companyID && x.UserRoleMapping.Any(y => y.Role.Scale != scale) && Convert.ToInt64(x.Id) != userID)
                                            .Select(x => new
                                             UserModel()
                                            {

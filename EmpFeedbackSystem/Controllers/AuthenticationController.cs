@@ -90,10 +90,11 @@ namespace EmpFeedbackSystem.Controllers
                     {
                         if (DeviceCRUD.VerifyOTP(req.device_id, req.user_id, Convert.ToString(req.otp)))
                         {
+                            var user = UserCRUD.GetUser(req.user_id);
                             DeviceCRUD.NulifyOTP(req.device_id, req.user_id, Convert.ToString(req.otp));
                             RegisteredDevice device = DeviceCRUD.GetDevice(req.device_id);
                             resp = new VerifyOTPResp()
-                            {
+                            { name=user.Name,
                                 status_code = Ok().StatusCode,
                                 status_message = Ok().ToString(),
                                 token = JwtToken.GenerateJwtToken(device)

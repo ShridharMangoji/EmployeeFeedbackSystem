@@ -19,6 +19,7 @@ namespace EmpFeedbackSystem.Models
     public class VerifyOTPResp: BaseResponse
     {
         public string token { get; set; }
+        public string name { get; set; }
     }
 
     public class FeedbackCategoryResp : BaseResponse
