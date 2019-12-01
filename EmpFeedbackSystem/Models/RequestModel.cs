@@ -13,6 +13,7 @@ namespace EmpFeedbackSystem.Models
         public string os_type { get; set; }
         public long user_id { get; set; }
         public string token { get; set; }
+        public long feedback_id { get; set; }
     }
 
 

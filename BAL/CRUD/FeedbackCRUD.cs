@@ -18,24 +18,56 @@ namespace BAL.CRUD
             }
         }
 
-        public static Feedback GetFeedbackDetails(long feedbackID)
+        public static FeedbackModel GetFeedbackDetails(long feedbackID)
         {
             using (var db = new Entities())
             {
-                var result = db.Feedback.Where(x => x.Id == feedbackID).FirstOrDefault();
+                var result = db.Feedback.Where(x => x.Id == feedbackID)
+                     .Select(
+                    x => new FeedbackModel()
+                    {
+                        Id = x.Id,
+                        CreatedBy = x.CreatedBy,
+                        CreatedFor = x.CreatedFor,
+                        FeedbackCategoryId = x.FeedbackCategoryId,
+                        Message = x.Message,
+                        statusId = x.StatusId,
+                         CreatedOn=x.CreatedOn,
+                        CreatedForName = x.CreatedForNavigation.Name,
+                        FeedbackCategoryName = x.FeedbackCategory.Name
+
+                    }).FirstOrDefault();
                 return result;
             }
         }
 
         public static List<FeedbackEscalationMapping> GetFeedbackEscalationDetails(long feedbackID)
         {
+            //return new List<FeedbackEscalationMapping>()
+            //{
+            //     new FeedbackEscalationMapping()
+            //     {
+            //          Message="abc"
+            //     }
+            //};
             using (var db = new Entities())
             {
-                var result = db.FeedbackEscalationMapping.Where(x => x.Id == feedbackID).OrderBy(x => x.LastUpdate).ToList();
+                var result = db.FeedbackEscalationMapping.Where(x => x.FeedbackId == feedbackID).OrderBy(x => x.LastUpdate).ToList();
                 return result;
             }
         }
-
+        public static void updateFeedbackStatus(long feedbackID, int status)
+        {
+            using (var db = new Entities())
+            {
+                var feedback = db.Feedback.Where(x => x.Id == feedbackID).FirstOrDefault();
+                if (feedback != null)
+                {
+                    feedback.StatusId = status;
+                    db.SaveChanges();
+                }
+            }
+        }
 
         public static void AddFeedback(Feedback feedbackReq)
         {
@@ -65,31 +97,99 @@ namespace BAL.CRUD
                              Name = x.CreatedByNavigation.Name
                          }).ToList();
 
-                var cUserlist = db.Feedback.Where(x => x.CreatedBy == user_id && x.StatusId != 3 && (DateTime.Now-x.CreatedOn).Days >= 7).Select(x =>
-                   new UserModel()
-                   {
-                       ID = x.CreatedFor,
-                       Name = x.CreatedForNavigation.Name
-                   }).ToList();
+                var cUserlist = db.Feedback.Where(x => x.CreatedBy == user_id && x.StatusId != 3 && (DateTime.Now - x.CreatedOn).Days >= 7).Select(x =>
+                     new UserModel()
+                     {
+                         ID = x.CreatedFor,
+                         Name = x.CreatedForNavigation.Name
+                     }).ToList();
 
-                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && x.Feedback.StatusId != 3 && (DateTime.Now-x.EscalatedUser.LastUpdate ).Days >= 7).Select(x =>
-                   new UserModel()
-                   {
-                       ID = x.Feedback.CreatedBy,
-                       Name = x.Feedback.CreatedByNavigation.Name
-                   }).ToList();
+                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && x.Feedback.StatusId != 3 && (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= 7).Select(x =>
+                    new UserModel()
+                    {
+                        ID = x.Feedback.CreatedBy,
+                        Name = x.Feedback.CreatedByNavigation.Name
+                    }).ToList();
                 fUserlist.AddRange(cUserlist);
                 fUserlist.AddRange(eUserlist);
                 return fUserlist.Distinct().ToList();
             }
         }
+        public static List<FeedbackModel> MyFeedbacks(long user_id)
+        {
+            using (var db = new Entities())
+            {
+                var cUserlist = db.Feedback.Where(x => x.CreatedBy == user_id
+                && x.StatusId != 3)
+                   .Select(
+                    x => new FeedbackModel()
+                    {
+                        Id = x.Id,
+                        CreatedBy = x.CreatedBy,
+                        CreatedFor = x.CreatedFor,
+                        FeedbackCategoryId = x.FeedbackCategoryId,
+                        Message = x.Message,
+                        CreatedForName = x.CreatedForNavigation.Name,
+                        FeedbackCategoryName = x.FeedbackCategory.Name,
+                         statusId = x.StatusId,
+                    })
+                    .ToList();
+                return cUserlist;
+            }
+        }
+        public static List<FeedbackModel> FeedbacksCreatedForMe(long user_id)
+        {
+            using (var db = new Entities())
+            {
+                var cUserlist = db.Feedback.Where(x => x.CreatedFor == user_id
+                && x.StatusId != 3)
+                     .Select(
+                    x => new FeedbackModel()
+                    {
+                        Id = x.Id,
+                        CreatedBy = x.CreatedBy,
+                        CreatedFor = x.CreatedFor,
+                        FeedbackCategoryId = x.FeedbackCategoryId,
+                        Message = x.Message,
+                         statusId=x.StatusId,
+                        CreatedForName = x.CreatedForNavigation.Name,
+                        FeedbackCategoryName = x.FeedbackCategory.Name
 
-        public static List<Feedback> GetFeedbackList(long user_id,long team_user_id)
+                    })
+                    .ToList();
+                return cUserlist;
+            }
+        }
+        public static List<FeedbackModel> FeedbacksEscalatedToMe(long user_id)
+        {
+            using (var db = new Entities())
+            {
+                var cUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id
+                && x.Feedback.StatusId != 3)
+                    .Select(
+                    x => new FeedbackModel()
+                    {
+                        Id = x.Feedback.Id,
+                        CreatedBy = x.Feedback.CreatedBy,
+                        CreatedFor = x.Feedback.CreatedFor,
+                        FeedbackCategoryId = x.Feedback.FeedbackCategoryId,
+                        Message = x.Message,
+                        CreatedForName = x.Feedback.CreatedForNavigation.Name,
+                        FeedbackCategoryName = x.Feedback.FeedbackCategory.Name,
+                         statusId = x.Feedback.StatusId,
+                    })
+                //Select(x => x.Feedback)
+                    .ToList();
+                return cUserlist;
+            }
+        }
+
+        public static List<Feedback> GetFeedbackList(long user_id, long team_user_id)
         {
             using (var db = new Entities())
             {
 
-                var cUserlist = db.Feedback.Where(x => x.CreatedBy == user_id && x.CreatedFor== team_user_id&& x.StatusId != 3 && (DateTime.Now - x.CreatedOn).Days >= 7)
+                var cUserlist = db.Feedback.Where(x => x.CreatedBy == user_id && x.CreatedFor == team_user_id && x.StatusId != 3 && (DateTime.Now - x.CreatedOn).Days >= 7)
                     .ToList();
 
                 var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && x.Feedback.StatusId != 3 && (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= 7).Select(x =>

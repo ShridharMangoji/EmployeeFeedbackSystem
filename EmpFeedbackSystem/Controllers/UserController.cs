@@ -28,7 +28,7 @@ namespace EmpFeedbackSystem.Controllers
                     {
                         status_code = Ok().StatusCode,
                         status_message = Ok().ToString(),
-                        UserList = UserCRUD.GetEscalationUserList(user.Id,user.CompanyId,scale??0)
+                        UserList = UserCRUD.GetEscalationUserList(user.Id,user.CompanyId,scale??0,0)
                     };
                 }
                 else
@@ -67,7 +67,7 @@ namespace EmpFeedbackSystem.Controllers
                     {
                         status_code = Ok().StatusCode,
                         status_message = Ok().ToString(),
-                        UserList = UserCRUD.GetEscalationUserList(user.Id, user.CompanyId, scale ?? 0)
+                        UserList = UserCRUD.GetEscalationUserList(user.Id, user.CompanyId, scale ?? 0,req.feedback_id)
                     };
                 }
                 else
@@ -144,7 +144,7 @@ namespace EmpFeedbackSystem.Controllers
                     {
                         status_code = Ok().StatusCode,
                         status_message = Ok().ToString(),
-                        UserList = UserCRUD.GetEscalationUserList(user.Id, user.CompanyId, scale ?? 0)
+                        UserList = UserCRUD.GetEscalationUserList(user.Id, user.CompanyId, scale ?? 0,0)
                     };
                 }
                 else

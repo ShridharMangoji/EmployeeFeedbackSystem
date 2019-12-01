@@ -18,6 +18,15 @@ namespace BAL.CRUD
             }
         }
 
+        public static int GetMaxScale()
+        {
+            using (var db = new Entities())
+            {
+                var result = db.UserRole.Max(x => x.Scale);
+                return result;
+            }
+        }
+
         public static Users GetUser(long userID)
         {
             using (var db = new Entities())
@@ -26,7 +35,14 @@ namespace BAL.CRUD
                 return result;
             }
         }
-
+        public static int GetUserScale(long userID)
+        {
+            using (var db = new Entities())
+            {
+                var result = db.Users.Where(x => x.Id == userID).Select(x=>x.UserRoleMapping.Select(y=>y.Role.Scale).FirstOrDefault()).FirstOrDefault();
+                return result;
+            }
+        }
         public static UserRole GetUserRole(long userID)
         {
             using (var db = new Entities())
@@ -36,19 +52,36 @@ namespace BAL.CRUD
             }
         }
 
-        public static List<UserModel> GetEscalationUserList(long userID, long companyID, int scale)
+        public static List<UserModel> GetEscalationUserList(long userID, long companyID, int scale,long feedbackid)
         {
             using (var db = new Entities())
             {
-                var result = db.Users.Where(x => x.CompanyId == companyID && x.UserRoleMapping.Any(y => y.Role.Scale > scale))
-                   .Select(x => new
-                    UserModel()
-                   {
-                       ID = x.Id,
-                       Name = x.Name
-                   }).ToList();
-
-                return result;
+                if (feedbackid > 0)
+                {
+                    var feedback = db.Feedback.Where(x => x.Id == feedbackid).FirstOrDefault();
+                    var result = db.Users.Where(x => x.CompanyId == companyID && Convert.ToInt64(x.Id) != userID) // && x.UserRoleMapping.Any(y => y.Role.Scale > scale)
+                                           .Select(x => new
+                                            UserModel()
+                                           {
+                                               ID = x.Id,
+                                               Name = x.Name
+                                           }).ToList();
+                    if (feedback != null)
+                        result = result.Where(x => x.ID != feedback.CreatedFor).ToList();
+                    return result;
+                }
+                else
+                {
+                    var result = db.Users.Where(x => x.CompanyId == companyID && Convert.ToInt64(x.Id) != userID) // && x.UserRoleMapping.Any(y => y.Role.Scale > scale)
+                       .Select(x => new
+                        UserModel()
+                       {
+                           ID = x.Id,
+                           Name = x.Name
+                       }).ToList();
+                    return result;
+                }
+              
             }
         }
 

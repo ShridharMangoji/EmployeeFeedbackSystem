@@ -67,6 +67,7 @@ namespace EmpFeedbackSystem.Controllers
                         FeedbackDetails = FeedbackCRUD.GetFeedbackDetails(req.feedback_id),
                         FeedbackEscalationHistory = FeedbackCRUD.GetFeedbackEscalationDetails(req.feedback_id)
                     };
+                    resp.IsEscalationAllowed = (DateTime.Now - resp.FeedbackDetails.CreatedOn).Days > 7 ? true : false;
                 }
                 else
                 {
@@ -102,18 +103,26 @@ namespace EmpFeedbackSystem.Controllers
 
                     if (req.feedback_info.Id > 0)
                     {
-                        FeedbackEscalationMapping escalation = new FeedbackEscalationMapping()
+                        if (req.feedback_info.StatusId == (int)eFeedbackStatus.Closed)
                         {
-                            EscalatedUserId = req.feedback_info.CreatedFor,
-                            FeedbackId = req.feedback_id,
-                            LastUpdate = DateTime.Now,
-                            Message = req.feedback_info.Message,
-                            Subject = req.feedback_info.Subject
-                        };
-                        FeedbackCRUD.AddFeedbackEscalation(escalation);
+                            FeedbackCRUD.updateFeedbackStatus(req.feedback_info.Id, (int)eFeedbackStatus.Closed);
+                        }
+                        else
+                        {
+                            FeedbackEscalationMapping escalation = new FeedbackEscalationMapping()
+                            {
+                                EscalatedUserId = req.feedback_info.CreatedFor,
+                                FeedbackId = req.feedback_id,
+                                LastUpdate = DateTime.Now,
+                                Message = req.feedback_info.Message,
+                                Subject = req.feedback_info.Subject
+                            };
+                            FeedbackCRUD.AddFeedbackEscalation(escalation);
+                        }
                     }
                     else
                     {
+
 
                         req.feedback_info.LastUpdate = DateTime.Now;
                         req.feedback_info.CreatedOn = DateTime.Now;
@@ -184,6 +193,51 @@ namespace EmpFeedbackSystem.Controllers
 
             return Ok(resp);
         }
+
+
+        [HttpPost(Name = "FeedbackDetailList")]
+        public IActionResult FeedbackDetailList(FeedbackListReq req)
+        {
+            FeedbackDetailListResp resp = null;
+            try
+            {
+                if (RequestValidator.FeedbackList(req))
+                {
+                    int maxScale = UserCRUD.GetMaxScale();
+
+                    resp = new FeedbackDetailListResp()
+                    {
+                        status_code = Ok().StatusCode,
+                        status_message = Ok().ToString(),
+                        IsEscalationRequired = UserCRUD.GetUserScale(req.user_id) == maxScale ? false : true,
+                        FeedbackCreatedByMe = FeedbackCRUD.MyFeedbacks(req.user_id),
+                        FeedbackCreatedForMe = FeedbackCRUD.FeedbacksCreatedForMe(req.user_id),
+                        FeedbackEscalatedToMe = FeedbackCRUD.FeedbacksEscalatedToMe(req.user_id)
+                    };
+                }
+                else
+                {
+                    resp = new FeedbackDetailListResp()
+                    {
+                        status_code = BadRequest().StatusCode,
+                        status_message = BadRequest().ToString()
+                    };
+                }
+
+            }
+            catch (Exception es)
+            {
+                resp = new FeedbackDetailListResp()
+                {
+                    status_code = 500,
+                    status_message = StatusMessage.InternalServerError
+                };
+            }
+
+            return Ok(resp);
+        }
+
+
 
     }
 }

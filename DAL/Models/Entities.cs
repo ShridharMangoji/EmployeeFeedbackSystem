@@ -30,7 +30,9 @@ namespace DAL.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Shridhar\\source\\repos\\EmpFeedbackSystem\\EmpFeedbackSystem\\Database\\DB.mdf;Trusted_Connection=True;Integrated Security=True;Connect Timeout=30;");
+                 optionsBuilder.UseSqlServer("Server=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Shridhar\\source\\repos\\EmpFeedbackSystem\\EmpFeedbackSystem\\Database\\DB.mdf;Trusted_Connection=True;Integrated Security=True;Connect Timeout=30;");
+
+               // optionsBuilder.UseSqlServer("Server=db4free.net;UID=shridharmangoji; password=shridharmangoji; database=empsystem;");
             }
         }
 
@@ -80,7 +82,6 @@ namespace DAL.Models
                 entity.Property(e => e.StatusId).HasColumnName("status_id");
 
                 entity.Property(e => e.Subject)
-                    .IsRequired()
                     .HasColumnName("subject");
 
                 entity.HasOne(d => d.CreatedByNavigation)

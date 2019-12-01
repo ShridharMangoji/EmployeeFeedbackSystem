@@ -38,7 +38,8 @@ namespace EmpFeedbackSystem.Models
 
     public class FeedbackHistoryResp : BaseResponse
     {
-        public Feedback FeedbackDetails { get; set; }
+        public bool IsEscalationAllowed { get; set; }
+        public FeedbackModel FeedbackDetails { get; set; }
 
         public List<FeedbackEscalationMapping> FeedbackEscalationHistory { get; set; }
     }
@@ -46,5 +47,13 @@ namespace EmpFeedbackSystem.Models
     public class FeedbackListResp : BaseResponse
     {
         public List<Feedback> FeedbackList { get; set; }
+    }
+
+    public class FeedbackDetailListResp : BaseResponse
+    {
+        public bool IsEscalationRequired { get; set; }
+        public List<FeedbackModel> FeedbackCreatedByMe { get; set; }
+        public List<FeedbackModel> FeedbackCreatedForMe { get; set; }
+        public List<FeedbackModel> FeedbackEscalatedToMe { get; set; }
     }
 }
