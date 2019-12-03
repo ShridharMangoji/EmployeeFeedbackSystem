@@ -32,10 +32,10 @@ namespace BAL.CRUD
                         FeedbackCategoryId = x.FeedbackCategoryId,
                         Message = x.Message,
                         statusId = x.StatusId,
-                         CreatedOn=x.CreatedOn,
+                        CreatedOn = x.CreatedOn,
                         CreatedForName = x.CreatedForNavigation.Name,
-                        FeedbackCategoryName = x.FeedbackCategory.Name
-
+                        FeedbackCategoryName = x.FeedbackCategory.Name,
+                        StrCreatedOn = x.CreatedOn.ToLongDateString()
                     }).FirstOrDefault();
                 return result;
             }
@@ -131,7 +131,7 @@ namespace BAL.CRUD
                         Message = x.Message,
                         CreatedForName = x.CreatedForNavigation.Name,
                         FeedbackCategoryName = x.FeedbackCategory.Name,
-                         statusId = x.StatusId,
+                        statusId = x.StatusId,
                     })
                     .ToList();
                 return cUserlist;
@@ -151,7 +151,7 @@ namespace BAL.CRUD
                         CreatedFor = x.CreatedFor,
                         FeedbackCategoryId = x.FeedbackCategoryId,
                         Message = x.Message,
-                         statusId=x.StatusId,
+                        statusId = x.StatusId,
                         CreatedForName = x.CreatedForNavigation.Name,
                         FeedbackCategoryName = x.FeedbackCategory.Name
 
@@ -176,7 +176,7 @@ namespace BAL.CRUD
                         Message = x.Message,
                         CreatedForName = x.Feedback.CreatedForNavigation.Name,
                         FeedbackCategoryName = x.Feedback.FeedbackCategory.Name,
-                         statusId = x.Feedback.StatusId,
+                        statusId = x.Feedback.StatusId,
                     })
                 //Select(x => x.Feedback)
                     .ToList();
@@ -199,5 +199,60 @@ namespace BAL.CRUD
                 return cUserlist.Distinct().ToList();
             }
         }
+
+
+        public static void ReplyToFeedback(FeedbackChats replyRequest)
+        {
+            using (var db = new Entities())
+            {
+                db.FeedbackChats.Add(replyRequest);
+                db.SaveChanges();
+            }
+        }
+
+        public static bool IsALreadyRepliedToFeedback(long feedback_id, long user_id)
+        {
+            using (var db = new Entities())
+            {
+                return db.FeedbackChats.Any(x => x.FeedbackId == feedback_id && x.ReplyGivenBy == user_id);
+            }
+        }
+
+        public static bool IsUserAccessibleForFeedbackChat(long feedback_id, long user_id)
+        {
+            using (var db = new Entities())
+            {
+                return db.Feedback.Any(x => x.CreatedFor == user_id || x.CreatedBy == user_id);
+            }
+        }
+
+
+        public static bool IsReplyRequired(long feedback_id, long user_id)
+        {
+            bool isReplyRequired = false;
+            using (var db = new Entities())
+            {
+                isReplyRequired = db.Feedback.Any(x =>x.Id==feedback_id&&( x.CreatedFor == user_id || x.CreatedBy == user_id));
+                if(isReplyRequired)
+                {
+                    isReplyRequired = !IsALreadyRepliedToFeedback(feedback_id, user_id);
+                }
+            }
+            return isReplyRequired;
+        }
+
+        public static List<FeedbackReplyModel> ReplyHistory(long feedback_id)
+        {
+            using (var db = new Entities())
+            {
+                return db.FeedbackChats.Where(x => x.FeedbackId == feedback_id).Select(x => new FeedbackReplyModel()
+                {
+                    replied_user_id = x.ReplyGivenBy,
+                    reply_message = x.Reply
+                }).ToList();
+            }
+        }
+
+
     }
 }

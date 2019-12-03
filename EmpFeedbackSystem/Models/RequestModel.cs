@@ -53,4 +53,11 @@ namespace EmpFeedbackSystem.Models
 
         public Feedback feedback_info { get; set; }
     }
+
+    public class ReplyReq : BaseRequest
+    {
+        public string reply { get; set; }
+
+    }
+
 }

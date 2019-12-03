@@ -62,11 +62,16 @@ namespace EmpFeedbackSystem.Controllers
                 {
                     resp = new FeedbackHistoryResp()
                     {
+                        IsReplyRequired = FeedbackCRUD.IsReplyRequired(req.feedback_id, req.user_id),
                         status_code = Ok().StatusCode,
                         status_message = Ok().ToString(),
+                        IsChatHistoryAccessible=FeedbackCRUD.IsUserAccessibleForFeedbackChat(req.feedback_id, req.user_id),
                         FeedbackDetails = FeedbackCRUD.GetFeedbackDetails(req.feedback_id),
                         FeedbackEscalationHistory = FeedbackCRUD.GetFeedbackEscalationDetails(req.feedback_id)
                     };
+                    if (resp.IsChatHistoryAccessible)
+                        resp.ReplyList = FeedbackCRUD.ReplyHistory(req.feedback_id);
+              
                     resp.IsEscalationAllowed = (DateTime.Now - resp.FeedbackDetails.CreatedOn).Days > 7 ? true : false;
                 }
                 else
@@ -237,6 +242,64 @@ namespace EmpFeedbackSystem.Controllers
             return Ok(resp);
         }
 
+
+
+        [HttpPost(Name = "ReplyToFeedback")]
+        public IActionResult ReplyToFeedback(ReplyReq req)
+        {
+            BaseResponse resp = null;
+            try
+            {
+                if (RequestValidator.ReplyToFeedback(req))
+                {
+
+                    if (!FeedbackCRUD.IsALreadyRepliedToFeedback(req.feedback_id, req.user_id))
+                    {
+                        var dbReq = new FeedbackChats()
+                        {
+                            FeedbackId = req.feedback_id,
+                            Reply = req.reply,
+                            LastUpdate = DateTime.Now,
+                            ReplyGivenBy = req.user_id
+                        };
+
+                        FeedbackCRUD.ReplyToFeedback(dbReq);
+
+                        resp = new BaseResponse()
+                        {
+                            status_code = Ok().StatusCode,
+                            status_message = Ok().ToString()
+                        };
+                    }
+                    else
+                    {
+                        resp = new BaseResponse()
+                        {
+                            status_code = 201,
+                            status_message = StatusMessage.RepliedAlready
+                        };
+                    }
+                }
+                else
+                {
+                    resp = new BaseResponse()
+                    {
+                        status_code = BadRequest().StatusCode,
+                        status_message = BadRequest().ToString()
+                    };
+                }
+            }
+            catch (Exception es)
+            {
+                resp = new BaseResponse()
+                {
+                    status_code = 500,
+                    status_message = StatusMessage.InternalServerError
+                };
+            }
+
+            return Ok(resp);
+        }
 
 
     }

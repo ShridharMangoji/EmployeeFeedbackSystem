@@ -7,6 +7,7 @@ namespace DAL.Models
     {
         public Feedback()
         {
+            FeedbackChats = new HashSet<FeedbackChats>();
             FeedbackEscalationMapping = new HashSet<FeedbackEscalationMapping>();
         }
 
@@ -24,6 +25,7 @@ namespace DAL.Models
         public virtual Users CreatedForNavigation { get; set; }
         public virtual FeedbackCategory FeedbackCategory { get; set; }
         public virtual FeedbackStatus Status { get; set; }
+        public virtual ICollection<FeedbackChats> FeedbackChats { get; set; }
         public virtual ICollection<FeedbackEscalationMapping> FeedbackEscalationMapping { get; set; }
     }
 }

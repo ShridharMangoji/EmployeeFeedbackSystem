@@ -18,6 +18,7 @@ namespace DAL.Models
         public virtual DbSet<Company> Company { get; set; }
         public virtual DbSet<Feedback> Feedback { get; set; }
         public virtual DbSet<FeedbackCategory> FeedbackCategory { get; set; }
+        public virtual DbSet<FeedbackChats> FeedbackChats { get; set; }
         public virtual DbSet<FeedbackEscalationMapping> FeedbackEscalationMapping { get; set; }
         public virtual DbSet<FeedbackStatus> FeedbackStatus { get; set; }
         public virtual DbSet<RegisteredDevice> RegisteredDevice { get; set; }
@@ -30,9 +31,7 @@ namespace DAL.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                 optionsBuilder.UseSqlServer("Server=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Shridhar\\source\\repos\\EmpFeedbackSystem\\EmpFeedbackSystem\\Database\\DB.mdf;Trusted_Connection=True;Integrated Security=True;Connect Timeout=30;");
-
-               // optionsBuilder.UseSqlServer("Server=db4free.net;UID=shridharmangoji; password=shridharmangoji; database=empsystem;");
+                optionsBuilder.UseSqlServer("Server=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Shridhar\\source\\repos\\EmpFeedbackSystem\\EmpFeedbackSystem\\Database\\DB.mdf;Trusted_Connection=True;");
             }
         }
 
@@ -81,8 +80,7 @@ namespace DAL.Models
 
                 entity.Property(e => e.StatusId).HasColumnName("status_id");
 
-                entity.Property(e => e.Subject)
-                    .HasColumnName("subject");
+                entity.Property(e => e.Subject).HasColumnName("subject");
 
                 entity.HasOne(d => d.CreatedByNavigation)
                     .WithMany(p => p.FeedbackCreatedByNavigation)
@@ -127,6 +125,37 @@ namespace DAL.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasColumnName("name");
+            });
+
+            modelBuilder.Entity<FeedbackChats>(entity =>
+            {
+                entity.ToTable("feedback_chats");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.FeedbackId).HasColumnName("feedback_id");
+
+                entity.Property(e => e.LastUpdate)
+                    .HasColumnName("last_update")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.Reply)
+                    .IsRequired()
+                    .HasColumnName("reply");
+
+                entity.Property(e => e.ReplyGivenBy).HasColumnName("reply_given_by");
+
+                entity.HasOne(d => d.Feedback)
+                    .WithMany(p => p.FeedbackChats)
+                    .HasForeignKey(d => d.FeedbackId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_feedback_chats_To_feedback");
+
+                entity.HasOne(d => d.ReplyGivenByNavigation)
+                    .WithMany(p => p.FeedbackChats)
+                    .HasForeignKey(d => d.ReplyGivenBy)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_feedback_chats_To_users");
             });
 
             modelBuilder.Entity<FeedbackEscalationMapping>(entity =>
@@ -279,7 +308,7 @@ namespace DAL.Models
                     .HasMaxLength(50);
 
                 entity.HasOne(d => d.Company)
-                    .WithMany(p => p.InverseCompany)
+                    .WithMany(p => p.Users)
                     .HasForeignKey(d => d.CompanyId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_users_To_company");

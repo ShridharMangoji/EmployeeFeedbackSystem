@@ -70,5 +70,10 @@ namespace EmpFeedbackSystem.Models
         {
             return true;
         }
+
+        internal static bool ReplyToFeedback(ReplyReq req)
+        {
+            return true;
+        }
     }
 }
