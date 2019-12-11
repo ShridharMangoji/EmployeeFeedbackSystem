@@ -90,29 +90,16 @@ namespace BAL.CRUD
         {
             using (var db = new Entities())
             {
-                var fUserlist = db.Feedback.Where(x => x.CreatedFor == user_id && x.StatusId != 3 && (DateTime.Now - x.CreatedOn).Days >= 7).Select(x =>
-                         new UserModel()
-                         {
-                             ID = x.CreatedBy,
-                             Name = x.CreatedByNavigation.Name
-                         }).ToList();
 
-                var cUserlist = db.Feedback.Where(x => x.CreatedBy == user_id && x.StatusId != 3 && (DateTime.Now - x.CreatedOn).Days >= 7).Select(x =>
-                     new UserModel()
-                     {
-                         ID = x.CreatedFor,
-                         Name = x.CreatedForNavigation.Name
-                     }).ToList();
-
-                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && x.Feedback.StatusId != 3 && (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= 7).Select(x =>
+                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && (x.Feedback.StatusId != 3 || x.Feedback.StatusId != 4) && (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= 7)
+                    .Select(x =>
                     new UserModel()
                     {
-                        ID = x.Feedback.CreatedBy,
-                        Name = x.Feedback.CreatedByNavigation.Name
+                        ID = x.Feedback.CreatedFor,
+                        Name = x.Feedback.CreatedForNavigation.Name
                     }).ToList();
-                fUserlist.AddRange(cUserlist);
-                fUserlist.AddRange(eUserlist);
-                return fUserlist.Distinct().ToList();
+                var check= eUserlist.GroupBy(x=>x.ID).Select(g=>g.First()).ToList();
+                return check;
             }
         }
         public static List<FeedbackModel> MyFeedbacks(long user_id)
@@ -142,7 +129,7 @@ namespace BAL.CRUD
             using (var db = new Entities())
             {
                 var cUserlist = db.Feedback.Where(x => x.CreatedFor == user_id
-                && x.StatusId != 3)
+                && (x.StatusId != 3|| x.StatusId != 4))
                      .Select(
                     x => new FeedbackModel()
                     {
@@ -165,7 +152,7 @@ namespace BAL.CRUD
             using (var db = new Entities())
             {
                 var cUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id
-                && x.Feedback.StatusId != 3)
+                &&( x.Feedback.StatusId != 3|| x.Feedback.StatusId != 4))
                     .Select(
                     x => new FeedbackModel()
                     {
@@ -189,10 +176,10 @@ namespace BAL.CRUD
             using (var db = new Entities())
             {
 
-                var cUserlist = db.Feedback.Where(x => x.CreatedBy == user_id && x.CreatedFor == team_user_id && x.StatusId != 3 && (DateTime.Now - x.CreatedOn).Days >= 7)
+                var cUserlist = db.Feedback.Where(x => x.CreatedBy == user_id && x.CreatedFor == team_user_id && (x.StatusId != 3|| x.StatusId != 4) && (DateTime.Now - x.CreatedOn).Days >= 7)
                     .ToList();
 
-                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && x.Feedback.StatusId != 3 && (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= 7).Select(x =>
+                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && (x.Feedback.StatusId != 3|| x.Feedback.StatusId != 4)&& (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= 7).Select(x =>
                     x.Feedback).ToList();
                 //cUserlist.AddRange(cUserlist);
                 cUserlist.AddRange(eUserlist);
