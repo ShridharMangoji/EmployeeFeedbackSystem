@@ -1,13 +1,11 @@
 ﻿using DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace BAL.CRUD
 {
-   public static class DeviceCRUD
+    public static class DeviceCRUD
     {
         public static long AddDeviceIfNotExist(RegisteredDevice device)
         {
