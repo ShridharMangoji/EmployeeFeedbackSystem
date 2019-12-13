@@ -9,6 +9,7 @@ using EmpFeedbackSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using BAL.Util;
 
 namespace EmpFeedbackSystem.Controllers
 {
@@ -41,7 +42,7 @@ namespace EmpFeedbackSystem.Controllers
                         resp = new BaseResponse()
                         {
                             status_code = Ok().StatusCode,
-                            status_message = Ok().ToString()
+                            status_message =StatusMessage.Success
                         };
 
                     }
@@ -50,7 +51,7 @@ namespace EmpFeedbackSystem.Controllers
                         resp = new BaseResponse()
                         {
                             status_code = Unauthorized().StatusCode,
-                            status_message = Unauthorized().ToString()
+                            status_message =StatusMessage.UnAuthorised
                         };
                     }
                 }
@@ -59,7 +60,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new BaseResponse()
                     {
                         status_code = BadRequest().StatusCode,
-                        status_message = BadRequest().ToString()
+                        status_message = StatusMessage.BadRequest
                     };
                 }
 
@@ -96,7 +97,7 @@ namespace EmpFeedbackSystem.Controllers
                             resp = new VerifyOTPResp()
                             { name=user.Name,
                                 status_code = Ok().StatusCode,
-                                status_message = Ok().ToString(),
+                                status_message = StatusMessage.Success,
                                 token = JwtToken.GenerateJwtToken(device)
                             };
                         }
@@ -105,7 +106,7 @@ namespace EmpFeedbackSystem.Controllers
                             resp = new VerifyOTPResp()
                             {
                                 status_code = Unauthorized().StatusCode,
-                                status_message = Unauthorized().ToString()
+                                status_message = StatusMessage.UnAuthorised
                             };
                         }
                     }
@@ -114,7 +115,7 @@ namespace EmpFeedbackSystem.Controllers
                         resp = new VerifyOTPResp()
                         {
                             status_code = BadRequest().StatusCode,
-                            status_message = BadRequest().ToString()
+                            status_message = StatusMessage.BadRequest
                         };
                     }
                 }
@@ -123,14 +124,13 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new VerifyOTPResp()
                     {
                         status_code = BadRequest().StatusCode,
-                        status_message = BadRequest().ToString()
+                        status_message = StatusMessage.BadRequest
                     };
                 }
 
             }
             catch (Exception es)
             {
-                System.IO.File.AppendAllText(@"E:\IIS\EMP\WriteText.txt", es.Message);
                 resp = new VerifyOTPResp()
                 {
                     status_code = 500,

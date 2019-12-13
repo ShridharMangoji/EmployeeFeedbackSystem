@@ -26,7 +26,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new FeedbackCategoryResp()
                     {
                         status_code = Ok().StatusCode,
-                        status_message = Ok().ToString(),
+                        status_message = StatusMessage.Success,
                         feedback_categories = FeedbackCRUD.GetAllFeedbackCategories()
                     };
                 }
@@ -35,7 +35,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new FeedbackCategoryResp()
                     {
                         status_code = BadRequest().StatusCode,
-                        status_message = BadRequest().ToString()
+                        status_message = StatusMessage.BadRequest
                     };
                 }
 
@@ -64,7 +64,7 @@ namespace EmpFeedbackSystem.Controllers
                     {
                         IsReplyRequired = FeedbackCRUD.IsReplyRequired(req.feedback_id, req.user_id),
                         status_code = Ok().StatusCode,
-                        status_message = Ok().ToString(),
+                        status_message = StatusMessage.Success,
                         IsChatHistoryAccessible=FeedbackCRUD.IsUserAccessibleForFeedbackChat(req.feedback_id, req.user_id),
                         FeedbackDetails = FeedbackCRUD.GetFeedbackDetails(req.feedback_id),
                         FeedbackEscalationHistory = FeedbackCRUD.GetFeedbackEscalationDetails(req.feedback_id)
@@ -79,7 +79,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new FeedbackHistoryResp()
                     {
                         status_code = BadRequest().StatusCode,
-                        status_message = BadRequest().ToString()
+                        status_message = StatusMessage.BadRequest
                     };
                 }
 
@@ -136,7 +136,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new BaseResponse()
                     {
                         status_code = Ok().StatusCode,
-                        status_message = Ok().ToString(),
+                        status_message = StatusMessage.Success,
                     };
                 }
                 else
@@ -144,7 +144,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new FeedbackHistoryResp()
                     {
                         status_code = BadRequest().StatusCode,
-                        status_message = BadRequest().ToString()
+                        status_message = StatusMessage.BadRequest
                     };
                 }
 
@@ -173,7 +173,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new FeedbackListResp()
                     {
                         status_code = Ok().StatusCode,
-                        status_message = Ok().ToString(),
+                        status_message = StatusMessage.Success,
                         FeedbackList = FeedbackCRUD.GetFeedbackList(req.user_id, req.escalated_user_id)
                     };
                 }
@@ -182,7 +182,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new FeedbackListResp()
                     {
                         status_code = BadRequest().StatusCode,
-                        status_message = BadRequest().ToString()
+                        status_message = StatusMessage.BadRequest
                     };
                 }
 
@@ -213,7 +213,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new FeedbackDetailListResp()
                     {
                         status_code = Ok().StatusCode,
-                        status_message = Ok().ToString(),
+                        status_message = StatusMessage.Success,
                         IsEscalationRequired = UserCRUD.GetUserScale(req.user_id) == maxScale ? false : true,
                         FeedbackCreatedByMe = FeedbackCRUD.MyFeedbacks(req.user_id),
                         FeedbackCreatedForMe = FeedbackCRUD.FeedbacksCreatedForMe(req.user_id),
@@ -225,7 +225,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new FeedbackDetailListResp()
                     {
                         status_code = BadRequest().StatusCode,
-                        status_message = BadRequest().ToString()
+                        status_message = StatusMessage.BadRequest
                     };
                 }
 
@@ -268,7 +268,7 @@ namespace EmpFeedbackSystem.Controllers
                         resp = new BaseResponse()
                         {
                             status_code = Ok().StatusCode,
-                            status_message = Ok().ToString()
+                            status_message = StatusMessage.Success
                         };
                     }
                     else
@@ -285,7 +285,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new BaseResponse()
                     {
                         status_code = BadRequest().StatusCode,
-                        status_message = BadRequest().ToString()
+                        status_message = StatusMessage.BadRequest
                     };
                 }
             }

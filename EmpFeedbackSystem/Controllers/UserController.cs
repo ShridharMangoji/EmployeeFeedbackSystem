@@ -27,7 +27,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new EscalationUserResp()
                     {
                         status_code = Ok().StatusCode,
-                        status_message = Ok().ToString(),
+                        status_message = StatusMessage.Success,
                         UserList = UserCRUD.GetEscalationUserList(user.Id,user.CompanyId,scale??0,0)
                     };
                 }
@@ -36,7 +36,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new EscalationUserResp()
                     {
                         status_code = BadRequest().StatusCode,
-                        status_message = BadRequest().ToString()
+                        status_message = StatusMessage.BadRequest
                     };
                 }
 
@@ -66,7 +66,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new EscalationUserResp()
                     {
                         status_code = Ok().StatusCode,
-                        status_message = Ok().ToString(),
+                        status_message = StatusMessage.Success,
                         UserList = UserCRUD.GetEscalationUserList(user.Id, user.CompanyId, scale ?? 0,req.feedback_id)
                     };
                 }
@@ -75,7 +75,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new EscalationUserResp()
                     {
                         status_code = BadRequest().StatusCode,
-                        status_message = BadRequest().ToString()
+                        status_message = StatusMessage.BadRequest
                     };
                 }
 
@@ -104,7 +104,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new EscalatedUserListResp()
                     {
                         status_code = Ok().StatusCode,
-                        status_message = Ok().ToString(),
+                        status_message = StatusMessage.Success,
                         UserList=userList
                     };
                 }
@@ -113,7 +113,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new EscalatedUserListResp()
                     {
                         status_code = BadRequest().StatusCode,
-                        status_message = BadRequest().ToString()
+                        status_message = StatusMessage.BadRequest
                     };
                 }
 
@@ -143,7 +143,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new EscalationUserResp()
                     {
                         status_code = Ok().StatusCode,
-                        status_message = Ok().ToString(),
+                        status_message = StatusMessage.Success,
                         UserList = UserCRUD.GetEscalationUserList(user.Id, user.CompanyId, scale ?? 0,0)
                     };
                 }
@@ -152,7 +152,7 @@ namespace EmpFeedbackSystem.Controllers
                     resp = new EscalationUserResp()
                     {
                         status_code = BadRequest().StatusCode,
-                        status_message = BadRequest().ToString()
+                        status_message = StatusMessage.BadRequest
                     };
                 }
 
