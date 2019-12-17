@@ -1,13 +1,17 @@
-﻿namespace BAL.Util
+﻿using System.Collections.Generic;
+
+namespace BAL.Util
 {
-    class Constants
+    public class Constants
     {
+        public static readonly List<int> ClosedStatus = new List<int>() { (int)eFeedbackStatus.Closed_Yes, (int)eFeedbackStatus.Closed_No };
     }
 
   public  enum eFeedbackStatus
     {
         New=1,
         Escalated=2,
-        Closed=3
+        Closed_Yes,
+        Closed_No
     }
 }

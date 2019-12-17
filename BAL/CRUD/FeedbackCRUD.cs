@@ -1,4 +1,5 @@
 ﻿using BAL.Model;
+using BAL.Util;
 using DAL.Models;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ namespace BAL.CRUD
 {
     public class FeedbackCRUD
     {
+       // List<int> closedStatus = new List<int>() { eFeedbackStatus. };
         public static List<FeedbackCategory> GetAllFeedbackCategories()
         {
             using (var db = new Entities())
@@ -34,7 +36,7 @@ namespace BAL.CRUD
                         CreatedOn = x.CreatedOn,
                         CreatedForName = x.CreatedForNavigation.Name,
                         FeedbackCategoryName = x.FeedbackCategory.Name,
-                        StrCreatedOn = x.CreatedOn.ToLongDateString()
+                        StrCreatedOn = x.CreatedOn.ToString()
                     }).FirstOrDefault();
                 return result;
             }
@@ -68,6 +70,15 @@ namespace BAL.CRUD
             }
         }
 
+        public static bool AnyOpenFeedback(long createdBy, long createdFor)
+        {
+            using (var db = new Entities())
+            {
+                var result = db.Feedback.Any(x => x.CreatedBy == createdBy && x.CreatedFor == createdFor && !Constants.ClosedStatus.Contains(x.StatusId));
+                return result;
+            }
+        }
+
         public static void AddFeedback(Feedback feedbackReq)
         {
             using (var db = new Entities())
@@ -90,7 +101,7 @@ namespace BAL.CRUD
             using (var db = new Entities())
             {
 
-                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && (x.Feedback.StatusId != 3 || x.Feedback.StatusId != 4) && (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= 7)
+                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && (!Constants.ClosedStatus.Contains(x.Feedback.StatusId)) && (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= 7)
                     .Select(x =>
                     new UserModel()
                     {
@@ -106,7 +117,7 @@ namespace BAL.CRUD
             using (var db = new Entities())
             {
                 var cUserlist = db.Feedback.Where(x => x.CreatedBy == user_id
-                && x.StatusId != 3)
+                && !Constants.ClosedStatus.Contains(x.StatusId))
                    .Select(
                     x => new FeedbackModel()
                     {
@@ -128,7 +139,7 @@ namespace BAL.CRUD
             using (var db = new Entities())
             {
                 var cUserlist = db.Feedback.Where(x => x.CreatedFor == user_id
-                && (x.StatusId != 3|| x.StatusId != 4))
+                && !Constants.ClosedStatus.Contains(x.StatusId))
                      .Select(
                     x => new FeedbackModel()
                     {
@@ -151,7 +162,7 @@ namespace BAL.CRUD
             using (var db = new Entities())
             {
                 var cUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id
-                &&( x.Feedback.StatusId != 3|| x.Feedback.StatusId != 4))
+                && !Constants.ClosedStatus.Contains(x.Feedback.StatusId))
                     .Select(
                     x => new FeedbackModel()
                     {
@@ -175,10 +186,10 @@ namespace BAL.CRUD
             using (var db = new Entities())
             {
 
-                var cUserlist = db.Feedback.Where(x => x.CreatedBy == user_id && x.CreatedFor == team_user_id && (x.StatusId != 3|| x.StatusId != 4) && (DateTime.Now - x.CreatedOn).Days >= 7)
+                var cUserlist = db.Feedback.Where(x => x.CreatedBy == user_id && x.CreatedFor == team_user_id && !Constants.ClosedStatus.Contains(x.StatusId)&& (DateTime.Now - x.CreatedOn).Days >= 7)
                     .ToList();
 
-                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && (x.Feedback.StatusId != 3|| x.Feedback.StatusId != 4)&& (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= 7).Select(x =>
+                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && !Constants.ClosedStatus.Contains(x.Feedback.StatusId)&& (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= 7).Select(x =>
                     x.Feedback).ToList();
                 //cUserlist.AddRange(cUserlist);
                 cUserlist.AddRange(eUserlist);

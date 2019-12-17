@@ -61,13 +61,13 @@ namespace EmpFeedbackSystem.Controllers
                         IsReplyRequired = FeedbackCRUD.IsReplyRequired(req.feedback_id, req.user_id),
                         status_code = Ok().StatusCode,
                         status_message = StatusMessage.Success,
-                        IsChatHistoryAccessible=FeedbackCRUD.IsUserAccessibleForFeedbackChat(req.feedback_id, req.user_id),
+                        IsChatHistoryAccessible = FeedbackCRUD.IsUserAccessibleForFeedbackChat(req.feedback_id, req.user_id),
                         FeedbackDetails = FeedbackCRUD.GetFeedbackDetails(req.feedback_id),
                         FeedbackEscalationHistory = FeedbackCRUD.GetFeedbackEscalationDetails(req.feedback_id)
                     };
                     if (resp.IsChatHistoryAccessible)
                         resp.ReplyList = FeedbackCRUD.ReplyHistory(req.feedback_id);
-              
+
                     resp.IsEscalationAllowed = (DateTime.Now - resp.FeedbackDetails.CreatedOn).Days > 7 ? true : false;
                 }
                 else
@@ -104,12 +104,13 @@ namespace EmpFeedbackSystem.Controllers
 
                     if (req.feedback_info.Id > 0)
                     {
-                        if (req.feedback_info.StatusId == (int)eFeedbackStatus.Closed)
+                        if (Constants.ClosedStatus.Contains(req.feedback_info.StatusId))
                         {
-                            FeedbackCRUD.updateFeedbackStatus(req.feedback_info.Id, (int)eFeedbackStatus.Closed);
+                            FeedbackCRUD.updateFeedbackStatus(req.feedback_info.Id, req.feedback_info.StatusId);
                         }
                         else
                         {
+                            FeedbackCRUD.updateFeedbackStatus(req.feedback_info.Id, (int)eFeedbackStatus.Escalated);
                             FeedbackEscalationMapping escalation = new FeedbackEscalationMapping()
                             {
                                 EscalatedUserId = req.feedback_info.CreatedFor,
@@ -120,20 +121,35 @@ namespace EmpFeedbackSystem.Controllers
                             };
                             FeedbackCRUD.AddFeedbackEscalation(escalation);
                         }
+                        resp = new BaseResponse()
+                        {
+                            status_code = Ok().StatusCode,
+                            status_message = StatusMessage.Success,
+                        };
                     }
                     else
                     {
-
-
-                        req.feedback_info.LastUpdate = DateTime.Now;
-                        req.feedback_info.CreatedOn = DateTime.Now;
-                        FeedbackCRUD.AddFeedback(req.feedback_info);
+                        if (!FeedbackCRUD.AnyOpenFeedback(req.feedback_info.CreatedBy, req.feedback_info.CreatedFor))
+                        {
+                            req.feedback_info.LastUpdate = DateTime.Now;
+                            req.feedback_info.CreatedOn = DateTime.Now;
+                            FeedbackCRUD.AddFeedback(req.feedback_info);
+                            resp = new BaseResponse()
+                            {
+                                status_code = Ok().StatusCode,
+                                status_message = StatusMessage.Success,
+                            };
+                        }
+                        else
+                        {
+                            resp = new BaseResponse()
+                            {
+                                status_code = Conflict().StatusCode,
+                                status_message = StatusMessage.FeedbackExists,
+                            };
+                        }
                     }
-                    resp = new BaseResponse()
-                    {
-                        status_code = Ok().StatusCode,
-                        status_message = StatusMessage.Success,
-                    };
+                    
                 }
                 else
                 {
