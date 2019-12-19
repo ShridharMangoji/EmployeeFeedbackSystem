@@ -9,7 +9,7 @@ namespace BAL.CRUD
 {
     public class FeedbackCRUD
     {
-       // List<int> closedStatus = new List<int>() { eFeedbackStatus. };
+        // List<int> closedStatus = new List<int>() { eFeedbackStatus. };
         public static List<FeedbackCategory> GetAllFeedbackCategories()
         {
             using (var db = new Entities())
@@ -40,6 +40,17 @@ namespace BAL.CRUD
                     }).FirstOrDefault();
                 return result;
             }
+        }
+
+        public static bool IsEscalationAllowed(long authenticatedUser, long createdFor, DateTime createdOn)
+        {
+            bool isAllowed = false;
+            if (authenticatedUser != createdFor)
+            {
+                isAllowed = (DateTime.Now - createdOn).Days > 7 ? true : false;
+            }
+            return isAllowed;
+
         }
 
         public static List<FeedbackEscalationMapping> GetFeedbackEscalationDetails(long feedbackID)
@@ -108,7 +119,7 @@ namespace BAL.CRUD
                         ID = x.Feedback.CreatedFor,
                         Name = x.Feedback.CreatedForNavigation.Name
                     }).ToList();
-                var check= eUserlist.GroupBy(x=>x.ID).Select(g=>g.First()).ToList();
+                var check = eUserlist.GroupBy(x => x.ID).Select(g => g.First()).ToList();
                 return check;
             }
         }
@@ -186,11 +197,11 @@ namespace BAL.CRUD
             using (var db = new Entities())
             {
 
-                var cUserlist = db.Feedback.Where(x => x.CreatedBy == user_id && x.CreatedFor == team_user_id && !Constants.ClosedStatus.Contains(x.StatusId)&& (DateTime.Now - x.CreatedOn).Days >= 7)
+                var cUserlist = db.Feedback.Where(x => x.CreatedBy == user_id && x.CreatedFor == team_user_id && !Constants.ClosedStatus.Contains(x.StatusId) && (DateTime.Now - x.CreatedOn).Days >= 7)
                     .ToList();
 
-                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && !Constants.ClosedStatus.Contains(x.Feedback.StatusId)&& (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= 7).Select(x =>
-                    x.Feedback).ToList();
+                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && !Constants.ClosedStatus.Contains(x.Feedback.StatusId) && (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= 7).Select(x =>
+                     x.Feedback).ToList();
                 //cUserlist.AddRange(cUserlist);
                 cUserlist.AddRange(eUserlist);
                 return cUserlist.Distinct().ToList();
@@ -229,8 +240,8 @@ namespace BAL.CRUD
             bool isReplyRequired = false;
             using (var db = new Entities())
             {
-                isReplyRequired = db.Feedback.Any(x =>x.Id==feedback_id&&( x.CreatedFor == user_id || x.CreatedBy == user_id));
-                if(isReplyRequired)
+                isReplyRequired = db.Feedback.Any(x => x.Id == feedback_id && (x.CreatedFor == user_id || x.CreatedBy == user_id));
+                if (isReplyRequired)
                 {
                     isReplyRequired = !IsALreadyRepliedToFeedback(feedback_id, user_id);
                 }

@@ -68,7 +68,8 @@ namespace EmpFeedbackSystem.Controllers
                     if (resp.IsChatHistoryAccessible)
                         resp.ReplyList = FeedbackCRUD.ReplyHistory(req.feedback_id);
 
-                    resp.IsEscalationAllowed = (DateTime.Now - resp.FeedbackDetails.CreatedOn).Days > 7 ? true : false;
+                    resp.IsEscalationAllowed = FeedbackCRUD.IsEscalationAllowed(req.user_id, resp.FeedbackDetails.CreatedFor,resp.FeedbackDetails.CreatedOn);// (DateTime.Now - resp.FeedbackDetails.CreatedOn).Days > 7 ? true : false;
+               
                 }
                 else
                 {

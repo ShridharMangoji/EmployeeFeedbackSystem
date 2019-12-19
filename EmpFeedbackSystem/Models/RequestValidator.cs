@@ -18,7 +18,7 @@
         {
             if (req == null || string.IsNullOrEmpty(req.device_id) ||
                 string.IsNullOrEmpty(req.os_type) ||
-                req.user_id <= 0)
+                req.user_id <= 0||req.otp<=0)
             {
                 return false;
             }
