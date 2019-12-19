@@ -16,6 +16,7 @@ namespace BAL.CRUD
                 {
                     db.Entry(device).State = EntityState.Modified;
                     db.Entry(device).Property(x => x.RegisteredOn).IsModified = false;
+                    db.Entry(device).Property(x => x.Otp).IsModified = false;
                 }
                 else
                     db.Entry(device).State = EntityState.Added;

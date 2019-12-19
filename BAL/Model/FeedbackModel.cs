@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Models;
+using System;
 
 namespace BAL.Model
 {
@@ -15,6 +16,8 @@ namespace BAL.Model
         public string StrCreatedOn { get; set; }
         public string CreatedForName { get; set; }
         public string FeedbackCategoryName { get; set; }
+
+        public string EscalatedUserName { get; set; }
     }
 
     public class FeedbackReplyModel
@@ -23,4 +26,11 @@ namespace BAL.Model
         public long replied_user_id { get; set; }
 
     }
+
+    public class FeedbackEscalationModel: FeedbackEscalationMapping
+    {
+        public string feedback_escalated_username { get; set; }
+
+    }
+
 }

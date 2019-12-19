@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using BAL.CRUD;
+using BAL.Model;
 using BAL.Util;
 using DAL.Models;
 using EmpFeedbackSystem.Models;
@@ -11,6 +13,7 @@ namespace EmpFeedbackSystem.Controllers
     [ApiController]
     public class FeedbackController : ControllerBase
     {
+
         [HttpPost(Name = "GetFeedbackCategories")]
         public IActionResult GetFeedbackCategories(BaseRequest req)
         {
@@ -54,6 +57,7 @@ namespace EmpFeedbackSystem.Controllers
             FeedbackHistoryResp resp = null;
             try
             {
+
                 if (RequestValidator.FeedbackHistory(req))
                 {
                     resp = new FeedbackHistoryResp()
@@ -67,9 +71,12 @@ namespace EmpFeedbackSystem.Controllers
                     };
                     if (resp.IsChatHistoryAccessible)
                         resp.ReplyList = FeedbackCRUD.ReplyHistory(req.feedback_id);
+                    if (resp.FeedbackEscalationHistory.Count > 0)
+                    {
+                        resp.FeedbackDetails.EscalatedUserName = resp.FeedbackEscalationHistory.OrderByDescending(x => x.LastUpdate).FirstOrDefault().feedback_escalated_username;
+                    }
+                    resp.IsEscalationAllowed = FeedbackCRUD.IsEscalationAllowed(req.user_id, resp.FeedbackDetails.CreatedFor, resp.FeedbackDetails.CreatedOn);
 
-                    resp.IsEscalationAllowed = FeedbackCRUD.IsEscalationAllowed(req.user_id, resp.FeedbackDetails.CreatedFor,resp.FeedbackDetails.CreatedOn);// (DateTime.Now - resp.FeedbackDetails.CreatedOn).Days > 7 ? true : false;
-               
                 }
                 else
                 {
@@ -150,7 +157,7 @@ namespace EmpFeedbackSystem.Controllers
                             };
                         }
                     }
-                    
+
                 }
                 else
                 {

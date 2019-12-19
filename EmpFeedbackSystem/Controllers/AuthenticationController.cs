@@ -29,7 +29,7 @@ namespace EmpFeedbackSystem.Controllers
                             DeviceId = req.device_id,
                             LastUpdate = DateTime.Now,
                             OsType = req.os_type,
-                            Otp = "1111",
+                            //Otp = "1111",
                             RegisteredOn = DateTime.Now,
                             UserId = req.user_id
                         };
@@ -87,7 +87,7 @@ namespace EmpFeedbackSystem.Controllers
                         if (DeviceCRUD.VerifyOTP(req.device_id, req.user_id, Convert.ToString(req.otp)))
                         {
                             var user = UserCRUD.GetUser(req.user_id);
-                            DeviceCRUD.NulifyOTP(req.device_id, req.user_id, Convert.ToString(req.otp));
+                           // DeviceCRUD.NulifyOTP(req.device_id, req.user_id, Convert.ToString(req.otp));
                             RegisteredDevice device = DeviceCRUD.GetDevice(req.device_id);
                             resp = new VerifyOTPResp()
                             { name=user.Name,

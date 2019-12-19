@@ -9,6 +9,8 @@ namespace BAL.CRUD
 {
     public class FeedbackCRUD
     {
+        
+
         // List<int> closedStatus = new List<int>() { eFeedbackStatus. };
         public static List<FeedbackCategory> GetAllFeedbackCategories()
         {
@@ -47,24 +49,28 @@ namespace BAL.CRUD
             bool isAllowed = false;
             if (authenticatedUser != createdFor)
             {
-                isAllowed = (DateTime.Now - createdOn).Days > 7 ? true : false;
+                isAllowed = (DateTime.Now - createdOn).Days > Constants.EscalationPeriod ? true : false;
             }
             return isAllowed;
 
         }
 
-        public static List<FeedbackEscalationMapping> GetFeedbackEscalationDetails(long feedbackID)
+        public static List<FeedbackEscalationModel> GetFeedbackEscalationDetails(long feedbackID)
         {
-            //return new List<FeedbackEscalationMapping>()
-            //{
-            //     new FeedbackEscalationMapping()
-            //     {
-            //          Message="abc"
-            //     }
-            //};
             using (var db = new Entities())
             {
-                var result = db.FeedbackEscalationMapping.Where(x => x.FeedbackId == feedbackID).OrderBy(x => x.LastUpdate).ToList();
+                var result = db.FeedbackEscalationMapping.Where(x => x.FeedbackId == feedbackID)
+                    .Select(x => new FeedbackEscalationModel()
+                    {
+                        EscalatedUserId = x.EscalatedUserId,
+                        Id = x.Id,
+                        FeedbackId = x.FeedbackId,
+                        feedback_escalated_username = x.EscalatedUser.Name,
+                        LastUpdate = x.LastUpdate,
+                        Message = x.Message,
+                        Subject = x.Subject
+                    })
+                    .OrderBy(x => x.LastUpdate).ToList();
                 return result;
             }
         }
@@ -112,7 +118,7 @@ namespace BAL.CRUD
             using (var db = new Entities())
             {
 
-                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && (!Constants.ClosedStatus.Contains(x.Feedback.StatusId)) && (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= 7)
+                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && (!Constants.ClosedStatus.Contains(x.Feedback.StatusId)) && (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= Constants.EscalationPeriod)
                     .Select(x =>
                     new UserModel()
                     {
@@ -197,10 +203,10 @@ namespace BAL.CRUD
             using (var db = new Entities())
             {
 
-                var cUserlist = db.Feedback.Where(x => x.CreatedBy == user_id && x.CreatedFor == team_user_id && !Constants.ClosedStatus.Contains(x.StatusId) && (DateTime.Now - x.CreatedOn).Days >= 7)
+                var cUserlist = db.Feedback.Where(x => x.CreatedBy == user_id && x.CreatedFor == team_user_id && !Constants.ClosedStatus.Contains(x.StatusId) && (DateTime.Now - x.CreatedOn).Days >= Constants.EscalationPeriod)
                     .ToList();
 
-                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && !Constants.ClosedStatus.Contains(x.Feedback.StatusId) && (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= 7).Select(x =>
+                var eUserlist = db.FeedbackEscalationMapping.Where(x => x.EscalatedUserId == user_id && !Constants.ClosedStatus.Contains(x.Feedback.StatusId) && (DateTime.Now - x.EscalatedUser.LastUpdate).Days >= Constants.EscalationPeriod).Select(x =>
                      x.Feedback).ToList();
                 //cUserlist.AddRange(cUserlist);
                 cUserlist.AddRange(eUserlist);
@@ -258,6 +264,14 @@ namespace BAL.CRUD
                     replied_user_id = x.ReplyGivenBy,
                     reply_message = x.Reply
                 }).ToList();
+            }
+        }
+
+        public static FeedbackEscalationMapping GetFeedbackEscalation(long escalationID)
+        {
+            using (var db = new Entities())
+            {
+                return db.FeedbackEscalationMapping.Where(x => x.Id == escalationID).FirstOrDefault();
             }
         }
 

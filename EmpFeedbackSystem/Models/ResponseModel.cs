@@ -42,7 +42,7 @@ namespace EmpFeedbackSystem.Models
 
         public bool IsEscalationAllowed { get; set; }
         public FeedbackModel FeedbackDetails { get; set; }
-        public List<FeedbackEscalationMapping> FeedbackEscalationHistory { get; set; }
+        public List<FeedbackEscalationModel> FeedbackEscalationHistory { get; set; }
     }
 
     public class FeedbackListResp : BaseResponse

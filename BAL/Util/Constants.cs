@@ -5,6 +5,8 @@ namespace BAL.Util
     public class Constants
     {
         public static readonly List<int> ClosedStatus = new List<int>() { (int)eFeedbackStatus.Closed_Yes, (int)eFeedbackStatus.Closed_No };
+
+        public static int EscalationPeriod = 0;
     }
 
   public  enum eFeedbackStatus
