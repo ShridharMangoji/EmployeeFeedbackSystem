@@ -31,8 +31,9 @@ namespace DAL.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-              // optionsBuilder.UseSqlServer("Server=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Shridhar\\source\\repos\\EmpFeedbackSystem\\EmpFeedbackSystem\\Database\\DB.mdf;Trusted_Connection=True;");
-                optionsBuilder.UseSqlServer("Data Source=ec2-13-232-165-121.ap-south-1.compute.amazonaws.com; Initial Catalog= FeedbackSystem; uid=shridhar; Password=admin; ");
+                //optionsBuilder.UseSqlServer("Server=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Shridhar\\source\\repos\\EmpFeedbackSystem\\EmpFeedbackSystem\\Database\\DB.mdf;Trusted_Connection=True;");
+                //optionsBuilder.UseSqlServer("Data Source=ec2-13-232-165-121.ap-south-1.compute.amazonaws.com; Initial Catalog= FeedbackSystem; uid=shridhar; Password=admin; ");
+                optionsBuilder.UseSqlServer("Data Source=ec2-13-232-165-121.ap-south-1.compute.amazonaws.com; Initial Catalog= EmployeeFeedback; uid=shridhar; Password=admin; ");
             }
         }
 

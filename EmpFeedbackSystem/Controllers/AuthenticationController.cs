@@ -24,22 +24,13 @@ namespace EmpFeedbackSystem.Controllers
                 {
                     if (UserCRUD.IsValidUser(req.user_id))
                     {
-                        RegisteredDevice device = new RegisteredDevice()
-                        {
-                            DeviceId = req.device_id,
-                            LastUpdate = DateTime.Now,
-                            OsType = req.os_type,
-                            //Otp = "1111",
-                            RegisteredOn = DateTime.Now,
-                            UserId = req.user_id
-                        };
+                        var device = DeviceCRUD.GetDevice(req.device_id, req.user_id, req.os_type);
                         DeviceCRUD.AddDeviceIfNotExist(device);
                         resp = new BaseResponse()
                         {
                             status_code = Ok().StatusCode,
                             status_message =StatusMessage.Success
                         };
-
                     }
                     else
                     {

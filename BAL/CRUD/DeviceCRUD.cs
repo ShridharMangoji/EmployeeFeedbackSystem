@@ -7,6 +7,7 @@ namespace BAL.CRUD
 {
     public static class DeviceCRUD
     {
+        
         public static long AddDeviceIfNotExist(RegisteredDevice device)
         {
             using (var db = new Entities())
@@ -19,7 +20,11 @@ namespace BAL.CRUD
                     db.Entry(device).Property(x => x.Otp).IsModified = false;
                 }
                 else
+                {
+                    device.RegisteredOn = DateTime.Now;
                     db.Entry(device).State = EntityState.Added;
+                }
+                device.LastUpdate = DateTime.Now;
                 db.SaveChanges();
                 return device.Id;
             }
@@ -57,6 +62,16 @@ namespace BAL.CRUD
             using (var db = new Entities())
             {
                 var result = db.RegisteredDevice.Where(x => x.DeviceId == device_id ).Include(x=>x.User).FirstOrDefault();
+                return result;
+            }
+        }
+
+        public static RegisteredDevice GetDevice(string device_id,long user_id,string os_type)
+        {
+            using (var db = new Entities())
+            {
+                var result = db.RegisteredDevice.Where(x => x.DeviceId == device_id
+                &&x.UserId==user_id&&x.OsType ==os_type).FirstOrDefault();
                 return result;
             }
         }
