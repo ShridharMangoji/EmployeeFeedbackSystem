@@ -25,6 +25,10 @@ namespace EmpFeedbackSystem.Controllers
                     if (UserCRUD.IsValidUser(req.user_id))
                     {
                         var device = DeviceCRUD.GetDevice(req.device_id, req.user_id, req.os_type);
+                        if(device==null)
+                        {
+                            device = new RegisteredDevice() { DeviceId=req.device_id,UserId=req.user_id,OsType=req.os_type, LastUpdate=DateTime.Now, Otp="1111" };
+                        }
                         DeviceCRUD.AddDeviceIfNotExist(device);
                         resp = new BaseResponse()
                         {

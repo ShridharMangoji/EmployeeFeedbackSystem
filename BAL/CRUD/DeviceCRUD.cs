@@ -72,6 +72,7 @@ namespace BAL.CRUD
             {
                 var result = db.RegisteredDevice.Where(x => x.DeviceId == device_id
                 &&x.UserId==user_id&&x.OsType ==os_type).FirstOrDefault();
+                
                 return result;
             }
         }
