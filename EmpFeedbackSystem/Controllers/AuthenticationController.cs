@@ -17,7 +17,7 @@ namespace EmpFeedbackSystem.Controllers
         [AllowAnonymous]
         public IActionResult GenerateOTP(GenerateOTPReq req)
         {
-            BaseResponse resp = null;
+            BaseResponse resp = new BaseResponse();
             try
             {
                 if (RequestValidator.GenerateOTP(req))
@@ -30,39 +30,28 @@ namespace EmpFeedbackSystem.Controllers
                             device = new RegisteredDevice() { DeviceId=req.device_id,UserId=req.user_id,OsType=req.os_type, LastUpdate=DateTime.Now, Otp="1111" };
                         }
                         DeviceCRUD.AddDeviceIfNotExist(device);
-                        resp = new BaseResponse()
-                        {
-                            status_code = Ok().StatusCode,
-                            status_message =StatusMessage.Success
-                        };
+
+                        resp.status_code = Ok().StatusCode;
+                        resp.status_message = StatusMessage.Success;
+                       
                     }
                     else
                     {
-                        resp = new BaseResponse()
-                        {
-                            status_code = Unauthorized().StatusCode,
-                            status_message =StatusMessage.UnAuthorised
-                        };
+                        resp.status_code = Unauthorized().StatusCode;
+                        resp.status_message = StatusMessage.UnAuthorised;
                     }
                 }
                 else
                 {
-                    resp = new BaseResponse()
-                    {
-                        status_code = BadRequest().StatusCode,
-                        status_message = StatusMessage.BadRequest
-                    };
+                    resp.status_code = BadRequest().StatusCode;
+                    resp.status_message = StatusMessage.BadRequest;
                 }
 
             }
             catch (Exception es)
             {
-                
-                resp = new BaseResponse()
-                {
-                    status_code = 500,
-                    status_message = StatusMessage.InternalServerError
-                };
+                resp.status_code = 500;
+                resp.status_message = StatusMessage.InternalServerError;
             }
 
             return Ok(resp);
@@ -72,7 +61,7 @@ namespace EmpFeedbackSystem.Controllers
         [AllowAnonymous]
         public IActionResult VerifyOTP(VerifyOTPReq req)
         {
-            VerifyOTPResp resp = null;
+            VerifyOTPResp resp = new VerifyOTPResp();
             try
             {
                 if (RequestValidator.VerifyOTP(req))
@@ -84,48 +73,35 @@ namespace EmpFeedbackSystem.Controllers
                             var user = UserCRUD.GetUser(req.user_id);
                            // DeviceCRUD.NulifyOTP(req.device_id, req.user_id, Convert.ToString(req.otp));
                             RegisteredDevice device = DeviceCRUD.GetDevice(req.device_id);
-                            resp = new VerifyOTPResp()
-                            { name=user.Name,
-                                status_code = Ok().StatusCode,
-                                status_message = StatusMessage.Success,
-                                token = JwtToken.GenerateJwtToken(device)
-                            };
+
+                            resp.name = user.Name;
+                            resp.status_code = Ok().StatusCode;
+                            resp.status_message = StatusMessage.Success;
+                            resp.token = JwtToken.GenerateJwtToken(device);
                         }
                         else
                         {
-                            resp = new VerifyOTPResp()
-                            {
-                                status_code = Unauthorized().StatusCode,
-                                status_message = StatusMessage.UnAuthorised
-                            };
+                            resp.status_code = Unauthorized().StatusCode;
+                            resp.status_message = StatusMessage.UnAuthorised;
                         }
                     }
                     else
                     {
-                        resp = new VerifyOTPResp()
-                        {
-                            status_code = BadRequest().StatusCode,
-                            status_message = StatusMessage.BadRequest
-                        };
+                        resp.status_code = BadRequest().StatusCode;
+                        resp.status_message = StatusMessage.BadRequest;
                     }
                 }
                 else
                 {
-                    resp = new VerifyOTPResp()
-                    {
-                        status_code = BadRequest().StatusCode,
-                        status_message = StatusMessage.BadRequest
-                    };
+                    resp.status_code = BadRequest().StatusCode;
+                    resp.status_message = StatusMessage.BadRequest;
                 }
 
             }
             catch (Exception es)
             {
-                resp = new VerifyOTPResp()
-                {
-                    status_code = 500,
-                    status_message = StatusMessage.InternalServerError
-                };
+                resp.status_code = 500;
+                resp.status_message = StatusMessage.InternalServerError;
             }
 
             return Ok(resp);

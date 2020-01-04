@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
@@ -26,6 +27,33 @@ namespace BAL.Util
              signingCredentials: credentials);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public static long GetUserID(string token)
+        {
+            try
+            {
+                var key = Encoding.ASCII.GetBytes(AppSetting.Secret);
+                var handler = new JwtSecurityTokenHandler();
+                var validations = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                      
+                };
+                var claims = handler.ValidateToken(token, validations, out var tokenSecure).Claims.ToList();
+                var userID = claims.FirstOrDefault(c => c.Type.Contains("authentication")).Value??"0";
+                return long.Parse(userID);
+            }
+            catch(Exception es)
+            {
+                return 0;
+            }
+        }
+
+
+
         
    
     }
