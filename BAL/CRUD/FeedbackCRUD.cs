@@ -49,7 +49,7 @@ namespace BAL.CRUD
             bool isAllowed = false;
             if (authenticatedUser != createdFor)
             {
-                isAllowed = (DateTime.Now - createdOn).Days > Constants.EscalationPeriod ? true : false;
+                isAllowed = (DateTime.Now - createdOn).Days >= Constants.EscalationPeriod ? true : false;
             }
             return isAllowed;
 
