@@ -10,6 +10,8 @@ namespace EmpFeedbackSystem.Models
         public long user_id { get; set; }
         public string token { get; set; }
         public long feedback_id { get; set; }
+
+        public string fcm_token { get; set; }
     }
 
 

@@ -7,7 +7,7 @@ namespace BAL.CRUD
 {
     public static class DeviceCRUD
     {
-        
+
         public static long AddDeviceIfNotExist(RegisteredDevice device)
         {
             using (var db = new Entities())
@@ -39,7 +39,7 @@ namespace BAL.CRUD
                                 x.UserId == userID && x.Otp == otp);
                 return result;
             }
-            
+
         }
 
         public static void NulifyOTP(string deviceID, long userID, string otp)
@@ -48,7 +48,7 @@ namespace BAL.CRUD
             {
                 var result = db.RegisteredDevice.Where(x => x.DeviceId == deviceID &&
                                 x.UserId == userID && x.Otp == otp).FirstOrDefault();
-                if(result!=null)
+                if (result != null)
                 {
                     result.Otp = string.Empty;
                     result.LastUpdate = DateTime.Now;
@@ -57,23 +57,38 @@ namespace BAL.CRUD
             }
         }
 
-        public static RegisteredDevice GetDevice(string device_id)
+        public static RegisteredDevice GetDevice(string device_id,long userId, string osType)
         {
             using (var db = new Entities())
             {
-                var result = db.RegisteredDevice.Where(x => x.DeviceId == device_id ).Include(x=>x.User).FirstOrDefault();
+                var result = db.RegisteredDevice.Where(x => x.DeviceId == device_id&&x.UserId==userId&&x.OsType==osType).Include(x => x.User).FirstOrDefault();
                 return result;
             }
         }
 
-        public static RegisteredDevice GetDevice(string device_id,long user_id,string os_type)
+        //public static RegisteredDevice GetDevice(string device_id, long user_id, string os_type)
+        //{
+        //    using (var db = new Entities())
+        //    {
+        //        var result = db.RegisteredDevice.Where(x => x.DeviceId == device_id
+        //        && x.UserId == user_id && x.OsType == os_type).FirstOrDefault();
+
+        //        return result;
+        //    }
+        //}
+
+        public static void UpdateFcmToken(string fcmToken, string device_id, long user_id, string os_type)
         {
             using (var db = new Entities())
             {
-                var result = db.RegisteredDevice.Where(x => x.DeviceId == device_id
-                &&x.UserId==user_id&&x.OsType ==os_type).FirstOrDefault();
-                
-                return result;
+                var result = db.RegisteredDevice.Where(x => x.DeviceId == device_id &&
+                          x.OsType == os_type && x.UserId == user_id).FirstOrDefault();
+                if (result != null)
+                {
+                    result.FcmToken = fcmToken;
+                    result.LastUpdate = DateTime.Now;
+                    db.SaveChanges();
+                }
             }
         }
     }

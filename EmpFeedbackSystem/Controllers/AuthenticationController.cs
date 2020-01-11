@@ -72,8 +72,9 @@ namespace EmpFeedbackSystem.Controllers
                         {
                             var user = UserCRUD.GetUser(req.user_id);
                            // DeviceCRUD.NulifyOTP(req.device_id, req.user_id, Convert.ToString(req.otp));
-                            RegisteredDevice device = DeviceCRUD.GetDevice(req.device_id);
-
+                            RegisteredDevice device = DeviceCRUD.GetDevice(req.device_id,req.user_id,req.os_type);
+               
+                            DeviceCRUD.UpdateFcmToken(req.fcm_token, req.device_id, req.user_id, req.os_type);
                             resp.name = user.Name;
                             resp.status_code = Ok().StatusCode;
                             resp.status_message = StatusMessage.Success;

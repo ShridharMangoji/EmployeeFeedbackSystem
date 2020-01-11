@@ -188,9 +188,7 @@ namespace EmpFeedbackSystem.Controllers
                     {
                         resp.status_code = Ok().StatusCode;
                         resp.status_message = StatusMessage.Success;
-                        resp.FeedbackList = FeedbackCRUD.GetFeedbackList(req.user_id, req.escalated_user_id)
-
-
+                        resp.FeedbackList = FeedbackCRUD.GetFeedbackList(req.user_id, req.escalated_user_id);
                     }
                     else
                     {

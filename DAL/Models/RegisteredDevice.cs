@@ -12,7 +12,8 @@ namespace DAL.Models
         public string Otp { get; set; }
         public DateTime RegisteredOn { get; set; }
         public DateTime LastUpdate { get; set; }
-
+        public string FcmToken { get; set; }
+        
         public virtual Users User { get; set; }
     }
 }
