@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BAL.Model
+﻿namespace BAL.Model
 {
-  public  class UserModel
+    public  class UserModel
     {
         public long ID { get; set; }
 
