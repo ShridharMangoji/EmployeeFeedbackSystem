@@ -9,11 +9,18 @@ namespace BAL.Util
         public static int EscalationPeriod = 0;
     }
 
-  public  enum eFeedbackStatus
+    public enum eFeedbackStatus
     {
-        New=1,
-        Escalated=2,
+        New = 1,
+        Escalated = 2,
         Closed_Yes,
         Closed_No
+    }
+
+    public enum ePushNotification
+    {
+        None,
+        UpdatedFeedback,
+        NewFeedback
     }
 }

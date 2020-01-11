@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BAL.CRUD;
 using BAL.Util;
 using DAL.Models;
 using EmpFeedbackSystem.Models;
 using Microsoft.AspNetCore.Mvc;
+using PushNotification;
 
 namespace EmpFeedbackSystem.Controllers
 {
@@ -113,7 +115,7 @@ namespace EmpFeedbackSystem.Controllers
                     {
                         if (req.feedback_info.Id > 0)
                         {
-                            if (Constants.ClosedStatus.Contains(req.feedback_info.StatusId))
+                            if (BAL.Util.Constants.ClosedStatus.Contains(req.feedback_info.StatusId))
                             {
                                 FeedbackCRUD.updateFeedbackStatus(req.feedback_info.Id, req.feedback_info.StatusId);
                             }
@@ -129,6 +131,8 @@ namespace EmpFeedbackSystem.Controllers
                                     Subject = req.feedback_info.Subject
                                 };
                                 FeedbackCRUD.AddFeedbackEscalation(escalation);
+                                var fcmTokens = DeviceCRUD.GetFcmTokens(new System.Collections.Generic.List<long>() { req.feedback_info.CreatedFor });
+                                NotificationController.NotifyDevice((int)ePushNotification.None, 0, "Escalated feedback", fcmTokens);
                             }
                             resp.status_code = Ok().StatusCode;
                             resp.status_message = StatusMessage.Success;

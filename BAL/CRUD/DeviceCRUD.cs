@@ -1,12 +1,21 @@
 ﻿using DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BAL.CRUD
 {
     public static class DeviceCRUD
     {
+        public static List<string> GetFcmTokens(List<long> userList)
+        {
+            using (var db = new Entities())
+            {
+                var result = db.RegisteredDevice.Where(x => userList.Contains(x.UserId)).Select(x=>x.FcmToken).ToList();
+                return result;
+            }
+        }
 
         public static long AddDeviceIfNotExist(RegisteredDevice device)
         {
@@ -30,7 +39,6 @@ namespace BAL.CRUD
             }
         }
 
-
         public static bool VerifyOTP(string deviceID, long userID, string otp)
         {
             using (var db = new Entities())
@@ -39,7 +47,6 @@ namespace BAL.CRUD
                                 x.UserId == userID && x.Otp == otp);
                 return result;
             }
-
         }
 
         public static void NulifyOTP(string deviceID, long userID, string otp)
@@ -57,25 +64,14 @@ namespace BAL.CRUD
             }
         }
 
-        public static RegisteredDevice GetDevice(string device_id,long userId, string osType)
+        public static RegisteredDevice GetDevice(string device_id, long userId, string osType)
         {
             using (var db = new Entities())
             {
-                var result = db.RegisteredDevice.Where(x => x.DeviceId == device_id&&x.UserId==userId&&x.OsType==osType).Include(x => x.User).FirstOrDefault();
+                var result = db.RegisteredDevice.Where(x => x.DeviceId == device_id && x.UserId == userId && x.OsType == osType).Include(x => x.User).FirstOrDefault();
                 return result;
             }
         }
-
-        //public static RegisteredDevice GetDevice(string device_id, long user_id, string os_type)
-        //{
-        //    using (var db = new Entities())
-        //    {
-        //        var result = db.RegisteredDevice.Where(x => x.DeviceId == device_id
-        //        && x.UserId == user_id && x.OsType == os_type).FirstOrDefault();
-
-        //        return result;
-        //    }
-        //}
 
         public static void UpdateFcmToken(string fcmToken, string device_id, long user_id, string os_type)
         {
